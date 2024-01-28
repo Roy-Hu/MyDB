@@ -1,3 +1,24 @@
 [submodule "A0"]
 	path = A0
 	url = https://github.com/Roy-Hu/A0.git
+[submodule "A1"]
+	path = A1
+	url = https://github.com/Roy-Hu/A1.git
+[submodule "A2"]
+	path = A2
+	url = https://github.com/Roy-Hu/A2.git
+[submodule "A3"]
+	path = A3
+	url = https://github.com/Roy-Hu/A3.git
+[submodule "A4"]
+	path = A4
+	url = https://github.com/Roy-Hu/A4.git
+[submodule "A5"]
+	path = A5
+	url = https://github.com/Roy-Hu/A5.git
+[submodule "A6"]
+	path = A6
+	url = https://github.com/Roy-Hu/A6.git
+[submodule "A7"]
+	path = A7
+	url = https://github.com/Roy-Hu/A7.git
