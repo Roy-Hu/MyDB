@@ -1,0 +1,5 @@
+.vscode
+Build/bin
+Build/*.bin
+*.o
+catFile
