@@ -3,3 +3,13 @@ Build/bin
 Build/*.bin
 *.o
 catFile
+
+# CMake cache and files
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
+
+Main/SQL/source/Parser.c
+Main/SQL/source/Parser.h
+Main/SQL/source/Lexer.c
