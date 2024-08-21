@@ -14,7 +14,7 @@ typedef shared_ptr <ExprTree> ExprTreePtr;
 // this class encapsules a parsed SQL expression (such as "this.that > 34.5 AND 4 = 5")
 
 // class ExprTree is a pure virtual class... the various classes that implement it are below
-class ExprTree {
+class ExprTree : public enable_shared_from_this<ExprTree> {
 
 public:
 
@@ -50,6 +50,37 @@ public:
 			res = res || child->hasAgg (); 
 		return res;
 	} 
+	virtual vector<ExprTreePtr> getAggExprs() {
+		if (isSum() || isAvg())
+			return {shared_from_this()};
+		if (getChild())
+			return getChild()->getAggExprs();
+		if (getLHS() && getRHS()) {
+			vector<ExprTreePtr> vec1 = getLHS()->getAggExprs();
+			vector<ExprTreePtr> vec2 = getRHS()->getAggExprs();
+
+			vec1.insert(vec1.end(), make_move_iterator(vec2.begin()), make_move_iterator(vec2.end()));
+			
+			return vec1;
+		}
+		return {};
+  	}
+
+  virtual vector<ExprTreePtr> getIdentifiers() {
+	if (isId())
+		return {shared_from_this()};
+	if (getChild())
+		return getChild()->getIdentifiers();
+	if (getLHS() && getRHS()) {
+		vector<ExprTreePtr> vec1 = getLHS()->getIdentifiers();
+		vector<ExprTreePtr> vec2 = getRHS()->getIdentifiers();
+
+		vec1.insert(vec1.end(), make_move_iterator(vec2.begin()), make_move_iterator(vec2.end()));
+
+		return vec1;
+	}
+    return {};
+  }
 };
 
 class BoolLiteral : public ExprTree {
@@ -647,6 +678,10 @@ public:
 		return "sum(" + child->toString () + ")";
 	}	
 
+	ExprTreePtr getChild () {
+		return child;
+	}
+
 	bool isSum () {
 		return true;
 	}
@@ -679,6 +714,10 @@ public:
 		return "avg(" + child->toString () + ")";
 	}	
 
+	ExprTreePtr getChild () {
+		return child;
+	}
+	
 	bool isAvg () {
 		return true;
 	}

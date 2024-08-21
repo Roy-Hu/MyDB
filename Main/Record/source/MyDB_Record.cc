@@ -328,7 +328,7 @@ pair <func, MyDB_AttTypePtr> MyDB_Record :: compileHelper(char * &vals) {
 			MyDB_IntAttValPtr temp = make_shared <MyDB_IntAttVal> ();
 			scratch.push_back (temp);
 			temp->set (val);
-
+	
 			// returns a lambda that computes the result
 			return make_pair ([temp] {return temp;}, make_shared <MyDB_IntAttType> ());
 
@@ -516,7 +516,6 @@ pair <func, MyDB_AttTypePtr> MyDB_Record :: times (pair <func, MyDB_AttTypePtr> 
 }
 
 pair <func, MyDB_AttTypePtr> MyDB_Record :: divide (pair <func, MyDB_AttTypePtr> lhs, pair <func, MyDB_AttTypePtr> rhs) {
-
 	// if both sides can be cast upwards to be ints, then do so
 	if (lhs.second->promotableToInt () && rhs.second->promotableToInt ()) {
 		MyDB_IntAttValPtr temp = make_shared <MyDB_IntAttVal> ();
@@ -536,6 +535,7 @@ pair <func, MyDB_AttTypePtr> MyDB_Record :: divide (pair <func, MyDB_AttTypePtr>
 			make_shared <MyDB_DoubleAttType> ());
 
 	} else {
+		cout << lhs.second->toString () << " " << rhs.second->toString () << "\n";
 		cout << "This is bad... cannot do anything with the divide.\n";
 		exit (1);
 	}

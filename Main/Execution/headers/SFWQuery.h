@@ -16,8 +16,19 @@ private:
 	vector <ExprTreePtr> allDisjunctions;
 	vector <ExprTreePtr> groupingClauses;
 
+	map <string, MyDB_TablePtr> allTables;
+	map <string, MyDB_TableReaderWriterPtr> allTableReaderWriters;
+
+	map<string, pair<LogicalOpPtr, MyDB_SchemaPtr>> memoCache;
+	
+	vector<pair<vector<int>, vector<int>>> generatePartitions(int n);
+	string createMemoKey(const vector<pair<string, string>>& tables, const vector<ExprTreePtr>& valuesToSelect, const vector<ExprTreePtr>& CNF);
+
+	MyDB_SchemaPtr buildAggSchema (MyDB_SchemaPtr joinShema);
+	pair<LogicalOpPtr, MyDB_SchemaPtr> optimize(vector<pair<string, string>> tables, 
+		vector<ExprTreePtr> valuesToSelect, vector<ExprTreePtr> CNF);
 public:
-	SFWQuery () {}
+	SFWQuery () {};
 
 	SFWQuery (struct ValueList *selectClause, struct FromList *fromClause, 
 		struct CNF *cnf, struct ValueList *grouping);
@@ -34,7 +45,7 @@ public:
 	LogicalOpPtr buildLogicalQueryPlan (map <string, MyDB_TablePtr> &allTables, 
 		map <string, MyDB_TableReaderWriterPtr> &allTableReaderWriters);
 
-	~SFWQuery () {}
+	~SFWQuery () {};
 
 	void print ();
 

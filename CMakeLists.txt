@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(MyProject)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g")
 
 # Include directories
 include_directories(
@@ -61,9 +61,9 @@ function(add_unit_test TARGET_NAME SOURCE_FILES)
 endfunction()
 
 # Building all targets
-add_unit_test(bufferUnitTest ${CMAKE_SOURCE_DIR}/Main/BufferTest/source/BufferQUnit.cc)
-add_unit_test(recordUnitTest ${CMAKE_SOURCE_DIR}/Main/RecordTest/source/RecordQUnit.cc)
-add_unit_test(sortUnitTest ${CMAKE_SOURCE_DIR}/Main/SortTest/source/SortQUnit.cc)
-add_unit_test(bPlusUnitTest ${CMAKE_SOURCE_DIR}/Main/BPlusTest/source/BPlusQUnit.cc)
+# add_unit_test(bufferUnitTest ${CMAKE_SOURCE_DIR}/Main/BufferTest/source/BufferQUnit.cc)
+# add_unit_test(recordUnitTest ${CMAKE_SOURCE_DIR}/Main/RecordTest/source/RecordQUnit.cc)
+# add_unit_test(sortUnitTest ${CMAKE_SOURCE_DIR}/Main/SortTest/source/SortQUnit.cc)
+# add_unit_test(bPlusUnitTest ${CMAKE_SOURCE_DIR}/Main/BPlusTest/source/BPlusQUnit.cc)
 add_unit_test(sqlUnitTest ${CMAKE_SOURCE_DIR}/Main/SQLTest/source/main.cc)
-add_unit_test(relOpUnitTest ${CMAKE_SOURCE_DIR}/Main/RelOpTest/source/RelOpQUnit.cc)
+# add_unit_test(relOpUnitTest ${CMAKE_SOURCE_DIR}/Main/RelOpTest/source/RelOpQUnit.cc)

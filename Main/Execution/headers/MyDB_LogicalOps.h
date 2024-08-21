@@ -134,7 +134,11 @@ public:
 	//
 	LogicalTableScan (MyDB_TableReaderWriterPtr inputSpec, MyDB_TablePtr outputSpec, MyDB_StatsPtr inputStats, 
 		vector <ExprTreePtr> &selectionPred, vector <string> &exprsToCompute) : inputSpec (inputSpec), outputSpec (outputSpec),
-		inputStats (inputStats), selectionPred (selectionPred), exprsToCompute (exprsToCompute) {}
+		inputStats (inputStats), selectionPred (selectionPred), exprsToCompute (exprsToCompute), final (false) {}
+
+	LogicalTableScan(LogicalOpPtr inputOp, MyDB_TablePtr outputSpec, MyDB_StatsPtr inputStats, 
+		vector <string> &exprsToCompute) : inputOp (inputOp),
+		outputSpec (outputSpec), inputStats (inputStats), exprsToCompute (exprsToCompute), final (true) {}
 
 	// this costs the table scan returning the compute set of statistics for the output
 	pair <double, MyDB_StatsPtr> cost ();
@@ -147,12 +151,13 @@ public:
 	MyDB_TableReaderWriterPtr execute ();
 
 private:
-
+	LogicalOpPtr inputOp;
 	MyDB_TableReaderWriterPtr inputSpec;
 	MyDB_TablePtr outputSpec;
 	MyDB_StatsPtr inputStats;
         vector <ExprTreePtr> selectionPred;
 	vector <string> exprsToCompute;
+	bool final;
 };
 
 #endif

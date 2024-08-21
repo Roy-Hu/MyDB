@@ -71,6 +71,9 @@ public:
 	// returns the page size
 	size_t getPageSize ();
 	
+	// returns the number of pages
+	size_t getNumPages ();
+
 	// kills the indicated table, so that no pages will ever be written back to it
 	// also removes the physical file from disk, and gets rid of the FD
 	void killTable (MyDB_TablePtr killMe);

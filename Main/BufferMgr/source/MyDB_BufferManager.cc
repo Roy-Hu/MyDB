@@ -24,6 +24,10 @@
 
 using namespace std;
 
+size_t MyDB_BufferManager :: getNumPages () {
+	return numPages;
+}
+
 size_t MyDB_BufferManager :: getPageSize () {
 	return pageSize;
 }
