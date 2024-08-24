@@ -27,7 +27,7 @@ RUN make
 WORKDIR /MyDB/Build
 
 # Set the entry point to run sqlUnitTest
-ENTRYPOINT ["./bin/sqlUnitTest"]
+ENTRYPOINT ["./bin/sqlProgram"]
 
 # Set default command line arguments
 CMD ["catalogFile", "."]
