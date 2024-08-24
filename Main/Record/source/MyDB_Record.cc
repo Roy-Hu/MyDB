@@ -815,6 +815,16 @@ void MyDB_Record :: fromString (string res) {
 	bufferOld = true;
 }
 
+string MyDB_Record :: toString () {
+	string res;
+	for (MyDB_AttValPtr temp : values) {
+		res += temp->toString ();
+		res += "|";
+	}
+
+	return res;
+}
+
 std::ostream& operator<<(std::ostream& os, const MyDB_Record printMe) {
 	for (MyDB_AttValPtr temp : printMe.values) {
 		os << temp->toString () << "|";

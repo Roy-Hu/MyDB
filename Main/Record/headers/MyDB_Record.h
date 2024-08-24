@@ -65,6 +65,7 @@ public:
 	// parse the contents of this record from the given string
 	void fromString (string fromMe);
 
+	string toString ();
 	// write the record to an output string
 	friend std::ostream& operator<<(std::ostream& os, const MyDB_Record printMe);
 	friend std::ostream& operator<<(std::ostream& os, const MyDB_RecordPtr printMe);

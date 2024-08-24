@@ -87,12 +87,20 @@ int main () {
 
 		cout << "\nRunning selection.";
 		cout << "\nFirst result should be:\n";
+
+		string result = "Supplier#000000003|1|11-383-516-1199 4192.400000 furiously regular instructions impress slyly! carefu|";
+
 		cout << "Supplier#000000003|1|11-383-516-1199 4192.400000 furiously regular instructions impress slyly! carefu|\n\n";
                 MyDB_RecordPtr temp = supplierTableOut->getEmptyRecord ();
                 MyDB_RecordIteratorAltPtr myIter = supplierTableOut->getIteratorAlt ();
+				
+				myIter->getCurrent (temp);
+				if (temp->toString() == result) cout << "CORRECT" << endl << flush;
+				else cout << "***FAIL***" << endl << flush;
+				QUNIT_IS_EQUAL(temp->toString(), result);
 
                 while (myIter->advance ()) {
-                        myIter->getCurrent (temp);
+					myIter->getCurrent (temp);
 			cout << temp << "\n";
 		}
 
@@ -110,14 +118,20 @@ int main () {
 		cout << "running aggregate\n";
 		myOpAgain.run ();
 		
-                temp = aggTableOut->getEmptyRecord ();
-                myIter = aggTableOut->getIteratorAlt ();
+		temp = aggTableOut->getEmptyRecord ();
+		myIter = aggTableOut->getIteratorAlt ();
 
 		cout << "Now we count the records.";
 		cout << "\nThe output should be 413:\n";
-                while (myIter->advance ()) {
-                        myIter->getCurrent (temp);
-			cout << temp << "\n";
+		result = "413|";
+
+		while (myIter->advance ()) {
+			myIter->getCurrent (temp);
+
+			if (temp->toString() == result) cout << "CORRECT" << endl << flush;
+			else cout << "***FAIL***" << endl << flush;
+
+			QUNIT_IS_EQUAL(temp->toString(), result);
 		}
 	}
 
@@ -140,12 +154,23 @@ int main () {
 
 		cout << "\nFirst result should be:\n";
 		cout << "Supplier#000009428|1|11-896-966-5146 5429.370000 furiously regular pinto beans caj|\n\n";
+
+		string result = "Supplier#000009428|1|11-896-966-5146 5429.370000 furiously regular pinto beans caj|";
+		int i = 0;
                 MyDB_RecordPtr temp = supplierTableOut->getEmptyRecord ();
                 MyDB_RecordIteratorAltPtr myIter = supplierTableOut->getIteratorAlt ();
 
                 while (myIter->advance ()) {
                         myIter->getCurrent (temp);
+
+			if (i == 0) {
+			if (temp->toString() == result) cout << "CORRECT" << endl << flush;
+			else cout << "***FAIL***" << endl << flush;
+
+			QUNIT_IS_EQUAL(temp->toString(), result);
+			}
 			cout << temp << "\n";
+			i++;
 		}
 
 		// now, we count the total number of records 
@@ -167,9 +192,15 @@ int main () {
 
 		cout << "Now we count the records.";
 		cout << "\nThe output should be 29:\n";
+
+		result = "29|";
                 while (myIter->advance ()) {
                         myIter->getCurrent (temp);
-			cout << temp << "\n";
+
+			if (temp->toString() == result) cout << "CORRECT" << endl << flush;
+			else cout << "***FAIL***" << endl << flush;
+
+			QUNIT_IS_EQUAL(temp->toString(), result);
 		}
 	}
 	
@@ -179,8 +210,6 @@ int main () {
 		MyDB_SchemaPtr mySchemaOut = make_shared <MyDB_Schema> ();
 		mySchemaOut->appendAtt (make_pair ("l_name", make_shared <MyDB_StringAttType> ()));
 		mySchemaOut->appendAtt (make_pair ("combined_comment", make_shared <MyDB_StringAttType> ()));
-		MyDB_TablePtr myTableOut = make_shared <MyDB_Table> ("supplierOut", "supplierOut.bin", mySchemaOut);
-		MyDB_TableReaderWriterPtr supplierTableOut = make_shared <MyDB_TableReaderWriter> (myTableOut, myMgr);
 
 		// This basically runs:
 		//
@@ -204,14 +233,14 @@ int main () {
 		projections.push_back ("[l_name]");
 		projections.push_back ("+ (+ ([l_comment], string[ ]), [r_comment])");
 
-		cout << "Do you want to run a:\n";
-		cout << "\t1. Sort merge join.\n";
-		cout << "\t2. Scan join.\n";
-		cout << "Enter 1 or 2:\n";
-		int res;
-		cin >> res;
 
+		for (int res = 1; res <=2; res++) {
+
+	MyDB_TablePtr myTableOut = make_shared <MyDB_Table> ("supplierOut", "supplierOut.bin", mySchemaOut);
+		MyDB_TableReaderWriterPtr supplierTableOut = make_shared <MyDB_TableReaderWriter> (myTableOut, myMgr);
 		if (res == 2) {
+					cout << "\t2. Scan join.\n";
+
 			ScanJoin myOp (supplierTableL, supplierTableRNoBPlus, supplierTableOut, 
 				"&& ( == ([l_suppkey], [r_suppkey]), == ([l_name], [r_name]))", projections, hashAtts,
 				"|| ( == ([l_nationkey], int[3]), == ([l_nationkey], int[4]))",
@@ -219,6 +248,8 @@ int main () {
 			cout << "running join\n";
 			myOp.run ();
 		} else if (res == 1) {
+					cout << "\t1. Sort merge join.\n";
+
 			SortMergeJoin myOp (supplierTableL, supplierTableRNoBPlus, supplierTableOut, 
 				"&& ( == ([l_suppkey], [r_suppkey]), == ([l_name], [r_name]))", projections, 
 				make_pair (string ("[l_suppkey]"), string ("[r_suppkey]")),
@@ -258,11 +289,31 @@ int main () {
 		cout << "Supplier#000002265|32|\n";
 		cout << "Supplier#000002272|32|\n";
 		cout << "Supplier#000002282|32|\n";
+
+		string result[5] = {
+			"Supplier#000002245|32|",
+			"Supplier#000002264|32|",
+			"Supplier#000002265|32|",
+			"Supplier#000002272|32|",
+			"Supplier#000002282|32|"
+		};
+
 		cout << "\nHere goes:\n";
+				int i = 0;
                 while (myIter->advance ()) {
-                        myIter->getCurrent (temp);
-			cout << temp << "\n";
+					myIter->getCurrent (temp);
+
+					if (i < 5) {
+						if (temp->toString() != result[i]) cout << "***FAIL***" << endl << flush;
+
+						QUNIT_IS_EQUAL(temp->toString(), result[i]);
+					}
+ 
+					i++;
                 }
+
+				cout << "CORRECT" << endl << flush;
+		}
 	}
 
 	MyDB_BPlusTreeReaderWriterPtr supplierTableR = make_shared <MyDB_BPlusTreeReaderWriter> ("r_address", myTableRight, myMgr);
@@ -306,12 +357,21 @@ int main () {
                 MyDB_RecordPtr temp = supplierTableOut->getEmptyRecord ();
                 MyDB_RecordIteratorAltPtr myIter = supplierTableOut->getIteratorAlt ();
 
-		cout << "This should return 32 copies of 'Supplier#000009436|aaY,0sdTlrtKjse|I love comments! unusual, regular...'" << "\n";
-                while (myIter->advance ()) {
-                        myIter->getCurrent (temp);
+		string result = "Supplier#000009436|aaY,0sdTlrtKjse|I love comments! unusual, regular accounts about the pending deposits are slyly special instructions-- ironic theodo|";
+		cout << "This should return 32 copies of 'Supplier#000009436|aaY,0sdTlrtKjse|I love comments! unusual, regular...|'" << "\n";
+
+		int correct = 0;
+		while (myIter->advance ()) {
+			myIter->getCurrent (temp);
 			cout << temp << "\n";
+
+			if (temp->toString() == result) correct++;
 		}	
 
+		QUNIT_IS_EQUAL(32, correct);
+
+		if (correct == 32) cout << "CORRECT" << endl << flush;
+		else cout << "***FAIL***" << endl << flush;
 	}
 
 	{
@@ -350,10 +410,21 @@ int main () {
 
 		cout << "\nThere should be nine groups, each with 32 records.\n";
 		cout << "One of them should be '5|Supplier#000000005|5.000000|-283.840000|32|'.\n";
+		string result = "5|Supplier#000000005|5.000000|-283.840000|32|";
+		bool found = false;
                 while (myIter->advance ()) {
                         myIter->getCurrent (temp);
 			cout << temp << "\n";
+
+			if (temp->toString() == result) {
+				found = true;
+			}
 		}
+
+		if (found) cout << "CORRECT" << endl << flush;
+		else cout << "***FAIL***" << endl << flush;
+
+		QUNIT_IS_TRUE(found);
 	}
 
 	{
@@ -389,11 +460,28 @@ int main () {
 		cout << "\nThere should be 101 groups, each with 3200 records, except for the first and last,\n";
 		cout << "These should be '0|50.000000|4017.558586|3168|' and\n";
 		cout << "'100|10000.000000|8968.420000|32|' respectively.\n";
+		string results[2] = {
+			"0|50.000000|4017.558586|3168|",
+			"100|10000.000000|8968.420000|32|"
+		};
+		
+		int correct = 0;
                 while (myIter->advance ()) {
                         myIter->getCurrent (temp);
 			cout << temp << "\n";
+			if (temp->toString()[0] == '0') {
+				if (temp->toString() == results[0]) correct++;
+				QUNIT_IS_EQUAL(temp->toString(), results[0]);
+			} else if (temp->toString().substr(0, 3) == "100") {
+				if (temp->toString() == results[1]) correct++;;
+				QUNIT_IS_EQUAL(temp->toString(), results[1]);
+			}
 		}
 
+		QUNIT_IS_EQUAL(2, correct);
+		if (correct == 2) cout << "CORRECT" << endl << flush;
+		else cout << "***FAIL***" << endl << flush;
+		
 		aggsToCompute.clear ();
 		aggsToCompute.push_back (make_pair (MyDB_AggType :: sum, "[r_cnt]"));
 
@@ -416,12 +504,18 @@ int main () {
 		myOpOnceAgain.run ();
 
 		cout << "\nThere should be one result: 320000.\n";
+		string result = "320000|";
                 temp = aggTableOutFinal->getEmptyRecord ();
                 myIter = aggTableOutFinal->getIteratorAlt ();
 
                 while (myIter->advance ()) {
                         myIter->getCurrent (temp);
 			cout << temp << "\n";
+
+			if (temp->toString() == result) cout << "CORRECT" << endl << flush;
+			else cout << "***FAIL***" << endl << flush;
+
+			QUNIT_IS_EQUAL(temp->toString(), result);
 		}
 	}
 
@@ -431,8 +525,6 @@ int main () {
 		mySchemaOut->appendAtt (make_pair ("name", make_shared <MyDB_StringAttType> ()));
 		mySchemaOut->appendAtt (make_pair ("acctbal", make_shared <MyDB_DoubleAttType> ()));
 		mySchemaOut->appendAtt (make_pair ("nation", make_shared <MyDB_IntAttType> ()));
-		MyDB_TablePtr myTableOut = make_shared <MyDB_Table> ("supplierOut", "supplierOut.bin", mySchemaOut);
-		MyDB_TableReaderWriterPtr supplierTableOut = make_shared <MyDB_TableReaderWriter> (myTableOut, myMgr);
 
 		// This basically runs:
 		//
@@ -453,14 +545,12 @@ int main () {
 		projections.push_back ("* ([l_acctbal], [r_acctbal])");
 		projections.push_back ("[l_nationkey]");
 
-		cout << "Do you want to run a:\n";
-		cout << "\t1. Sort merge join.\n";
-		cout << "\t2. Scan join.\n";
-		cout << "Enter 1 or 2:\n";
-		int res;
-		cin >> res;
-
+		for (int res = 1; res <=2; res++) {
+		MyDB_TablePtr myTableOut = make_shared <MyDB_Table> ("supplierOut", "supplierOut.bin", mySchemaOut);
+		MyDB_TableReaderWriterPtr supplierTableOut = make_shared <MyDB_TableReaderWriter> (myTableOut, myMgr);
 		if (res == 2) {
+		cout << "\t2. Scan join.\n";
+
 			ScanJoin myOp (supplierTableL, supplierTableRNoBPlus, supplierTableOut, 
 				"== ([l_nationkey], [r_nationkey]))", projections, hashAtts,
 				"&& (< ([l_acctbal], int[4500]), > ([l_acctbal], int[4450]))",
@@ -468,6 +558,8 @@ int main () {
 			cout << "running join\n";
 			myOp.run ();
 		} else if (res == 1) {
+					cout << "\t1. Sort merge join.\n";
+
 			SortMergeJoin myOp (supplierTableL, supplierTableRNoBPlus, supplierTableOut, 
 				"== ([l_nationkey], [r_nationkey]))", projections, 
 				make_pair (string ("[l_nationkey]"), string ("[r_nationkey]")),
@@ -493,19 +585,46 @@ int main () {
 		mySchemaOutAgain->appendAtt (make_pair ("mycnt", make_shared <MyDB_IntAttType> ()));
 		MyDB_TablePtr aggTable = make_shared <MyDB_Table> ("aggOut", "aggOut.bin", mySchemaOutAgain);
 		MyDB_TableReaderWriterPtr aggTableOut = make_shared <MyDB_TableReaderWriter> (aggTable, myMgr);
+		// use the schema to create a table
+		MyDB_TablePtr outTable = make_shared <MyDB_Table> ("sorted", "sorted.bin", mySchemaOutAgain);
+		MyDB_TableReaderWriter outputTable (outTable, myMgr);
 
 		Aggregate myOpAgain (supplierTableOut, aggTableOut, aggsToCompute, groupings, "bool[true]");
 		cout << "running aggregate\n";
 		myOpAgain.run ();
 		
-                MyDB_RecordPtr temp = aggTableOut->getEmptyRecord ();
-                MyDB_RecordIteratorAltPtr myIter = aggTableOut->getIteratorAlt ();
+		MyDB_RecordPtr rec1 = aggTableOut->getEmptyRecord ();
+		MyDB_RecordPtr rec2 = aggTableOut->getEmptyRecord ();
+		
+		function <bool ()> myComp = buildRecordComparator (rec1, rec2, "[nation]");
+		MyDB_TableReaderWriter aggTableRw (aggTable, myMgr);
+
+		sort (64, aggTableRw, outputTable, myComp, rec1, rec2);
+                MyDB_RecordPtr temp = outputTable.getEmptyRecord ();
+                MyDB_RecordIteratorAltPtr myIter = outputTable.getIteratorAlt ();
 
 		cout << "\nThe output should be\n\t0|64|\n\t1|96|\n\t2|64|\n\t3|96|\n\t4|192|\n\t5|256|\n\t6|192|\n\t7|96|\n\t8|64|\n\t9|128|\n\t11|288|\n\t14|96|\n\t15|128|\n\t16|128|\n\t17|32|\n\t19|64|\n\t20|384|\n\t24|64|\n\n";
-                while (myIter->advance ()) {
+		string result[18] = {
+			"0|64|","1|96|","2|64|","3|96|","4|192|","5|256|","6|192|","7|96|","8|64|","9|128|","11|288|","14|96|","15|128|","16|128|","17|32|","19|64|","20|384|","24|64|"};
+		int i = 0;
+				while (myIter->advance ()) {
                         myIter->getCurrent (temp);
 			cout << temp << "\n";
+
+					QUNIT_IS_TRUE(i < 18);
+					if (i >= 18) {
+						cout << "***FAIL***" << endl << flush;
+						break;
+					}
+
+					if (temp->toString() != result[i]) cout << "***FAIL***" << endl << flush;
+						QUNIT_IS_EQUAL(temp->toString(), result[i]);
+						
+					i++;
                 }
+		
+		cout << "CORRECT" << endl << flush;
+		}
 	}
 
 	{
@@ -513,8 +632,6 @@ int main () {
 		MyDB_SchemaPtr mySchemaOut = make_shared <MyDB_Schema> ();
 		mySchemaOut->appendAtt (make_pair ("name", make_shared <MyDB_StringAttType> ()));
 		mySchemaOut->appendAtt (make_pair ("acctbal", make_shared <MyDB_DoubleAttType> ()));
-		MyDB_TablePtr myTableOut = make_shared <MyDB_Table> ("supplierOut", "supplierOut.bin", mySchemaOut);
-		MyDB_TableReaderWriterPtr supplierTableOut = make_shared <MyDB_TableReaderWriter> (myTableOut, myMgr);
 
 		// This basically runs:
 		//
@@ -534,14 +651,13 @@ int main () {
 		projections.push_back ("+(+ ([l_name], string[ ]), [r_name])");
 		projections.push_back ("* ([l_acctbal], [r_acctbal])");
 
-		cout << "Do you want to run a:\n";
-		cout << "\t1. Sort merge join.\n";
-		cout << "\t2. Scan join.\n";
-		cout << "Enter 1 or 2:\n";
-		int res;
-		cin >> res;
+		for (int res = 1; res <= 2; res++) {
+		MyDB_TablePtr myTableOut = make_shared <MyDB_Table> ("supplierOut", "supplierOut.bin", mySchemaOut);
+		MyDB_TableReaderWriterPtr supplierTableOut = make_shared <MyDB_TableReaderWriter> (myTableOut, myMgr);
 
 		if (res == 2) {
+		cout << "\t2. Scan join.\n";
+
 			ScanJoin myOp (supplierTableL, supplierTableRNoBPlus, supplierTableOut, 
 				"== ([l_nationkey], [r_nationkey]))", projections, hashAtts,
 				"< ([l_nationkey], int[2])",
@@ -549,6 +665,8 @@ int main () {
 			cout << "running join (may take some time)\n";
 			myOp.run ();
 		} else if (res == 1) {
+		cout << "\t1. Sort merge join.\n";
+
 			SortMergeJoin myOp (supplierTableL, supplierTableRNoBPlus, supplierTableOut, 
 				"== ([l_nationkey], [r_nationkey]))", projections, 
 				make_pair (string ("[l_nationkey]"), string ("[r_nationkey]")),
@@ -581,10 +699,17 @@ int main () {
                 MyDB_RecordIteratorAltPtr myIter = aggTableOut->getIteratorAlt ();
 
 		cout << "\nThe output should be 11103008:\n";
+		string result = "11103008|";
                 while (myIter->advance ()) {
                         myIter->getCurrent (temp);
 			cout << temp << "\n";
+
+			if (temp->toString() == result) cout << "CORRECT" << endl << flush;
+			else cout << "***FAIL***" << endl << flush;
+
+			QUNIT_IS_EQUAL(temp->toString(), result);
                 }
+		}
 	}
 
 }
