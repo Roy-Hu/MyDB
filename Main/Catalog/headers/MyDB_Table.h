@@ -3,123 +3,123 @@
 #define TABLE_H
 
 #include <iostream>
+#include <memory>
+#include <string>
+
 #include "MyDB_Catalog.h"
 #include "MyDB_Schema.h"
 #include "MyDB_Table.h"
-#include <memory>
-#include <string>
 
 // create a smart pointer for database tables
 using namespace std;
 class MyDB_Table;
-typedef shared_ptr <MyDB_Table> MyDB_TablePtr;
+typedef shared_ptr<MyDB_Table> MyDB_TablePtr;
 
 // this class encapsulates the notion of a database table
-class MyDB_Table {
-
+class MyDB_Table
+{
 public:
+    // creates a new table with the given name, at the given storage location; the schema is empty
+    MyDB_Table(string tableName, string storageLoc);
 
-	// creates a new table with the given name, at the given storage location; the schema is empty
-	MyDB_Table (string tableName, string storageLoc);
+    // creates a table with the given name, at the given storage location, and the given schema
+    MyDB_Table(string tableName, string storageLoc, MyDB_SchemaPtr mySchema);
 
-	// creates a table with the given name, at the given storage location, and the given schema
-	MyDB_Table (string tableName, string storageLoc, MyDB_SchemaPtr mySchema);
+    // creates a table with the given name, at the given storage location, and the given schema,
+    // of the given type, with the given sort att
+    MyDB_Table(string tableName, string storageLoc, MyDB_SchemaPtr mySchema, string fileType,
+               string sortAtt);
 
-	// creates a table with the given name, at the given storage location, and the given schema,
-	// of the given type, with the given sort att
-	MyDB_Table (string tableName, string storageLoc, MyDB_SchemaPtr mySchema, string fileType, string sortAtt);
-	
-	// creates an empty table object
-	MyDB_Table ();
+    // creates an empty table object
+    MyDB_Table();
 
-	// load the table information from the catalog; return false iff not in the catalog
-	bool fromCatalog (string tableName, MyDB_CatalogPtr catalog);
+    // load the table information from the catalog; return false iff not in the catalog
+    bool fromCatalog(string tableName, MyDB_CatalogPtr catalog);
 
-	// write the dude to a catalog
-	void putInCatalog (MyDB_CatalogPtr catalog);
+    // write the dude to a catalog
+    void putInCatalog(MyDB_CatalogPtr catalog);
 
-	// get the name of the table
-	string &getName ();
+    // get the name of the table
+    string &getName();
 
-	// get the storage location of the table
-	string &getStorageLoc ();
+    // get the storage location of the table
+    string &getStorageLoc();
 
-	// gete the schema for this table
-	MyDB_SchemaPtr getSchema ();
+    // gete the schema for this table
+    MyDB_SchemaPtr getSchema();
 
-	// kill the dude
-	~MyDB_Table ();
+    // kill the dude
+    ~MyDB_Table();
 
-	// print to the screen
-	void print ();
+    // print to the screen
+    void print();
 
-	// return the last page in the table; -1 if there has never been anything
-	// written to the table (the table has just been initialized and setLastPage
-	// has never been called)
-	int lastPage ();
+    // return the last page in the table; -1 if there has never been anything
+    // written to the table (the table has just been initialized and setLastPage
+    // has never been called)
+    int lastPage();
 
-	// set the last page
-	void setLastPage (size_t lastPage);
+    // set the last page
+    void setLastPage(size_t lastPage);
 
-	// get the list of all of the tables from the catalog
-	static map <string, MyDB_TablePtr> getAllTables (MyDB_CatalogPtr fromMe);
+    // get the list of all of the tables from the catalog
+    static map<string, MyDB_TablePtr> getAllTables(MyDB_CatalogPtr fromMe);
 
-	// to print out a schema to the screen
-	friend std::ostream& operator<<(std::ostream& os, const MyDB_TablePtr printMe);
-	friend std::ostream& operator<<(std::ostream& os, const MyDB_Table printMe);
+    // to print out a schema to the screen
+    friend std::ostream &operator<<(std::ostream &os, const MyDB_TablePtr printMe);
+    friend std::ostream &operator<<(std::ostream &os, const MyDB_Table printMe);
 
-	// the sort att
-	string &getSortAtt ();
+    // the sort att
+    string &getSortAtt();
 
-	// the file type (ex: "heap" or "bplustree")
-	string &getFileType ();
+    // the file type (ex: "heap" or "bplustree")
+    string &getFileType();
 
-	// get/set the root location
-	void setRootLocation (int toMe);
-	int getRootLocation ();
+    // get/set the root location
+    void setRootLocation(int toMe);
+    int getRootLocation();
 
-        // get the distinct value count for an attribute
-        size_t getDistinctValues (string forMe);
-        size_t getDistinctValues (int forMe);
+    // get the distinct value count for an attribute
+    size_t getDistinctValues(string forMe);
+    size_t getDistinctValues(int forMe);
 
-        // set the distinct value count for all attributes
-        void setDistinctValues (vector <size_t> &toMe);
+    // set the distinct value count for all attributes
+    void setDistinctValues(vector<size_t> &toMe);
 
-        // get/set the number of tuples in the relation
-        void setTupleCount (size_t toMe);
-        size_t getTupleCount ();
+    // get/set the number of tuples in the relation
+    void setTupleCount(size_t toMe);
+    size_t getTupleCount();
 
-	// make a deep copy of the one we are given
-	MyDB_Table (MyDB_Table &setToMe);
+    // make a deep copy of the one we are given
+    MyDB_Table(MyDB_Table &setToMe);
 
 private:
- 
-	// the distinct value counts
-	vector <size_t> allCounts;
+    // the distinct value counts
+    vector<size_t> allCounts;
 
-	// the number of tuples
-	int count;
+    // the number of tuples
+    int count;
 
-	// the name of the sort att
-	string sortAtt;
+    // the name of the sort att
+    string sortAtt;
 
-	// the type of the file
-	string fileType;
-	
-	// the last used page in the table
-	int last;
+    // the type of the file
+    string fileType;
 
-	// the name of the table
-	string tableName;
+    // the last used page in the table
+    int last;
 
-	// the location where it is stored
-	string storageLoc;
+    // the name of the table
+    string tableName;
 
-	// the schema for this table
-	MyDB_SchemaPtr mySchema;
+    // the location where it is stored
+    string storageLoc;
 
-	// location of the root node
-	int rootLocation;
+    // the schema for this table
+    MyDB_SchemaPtr mySchema;
+
+    // location of the root node
+    int rootLocation;
 };
 
 #endif

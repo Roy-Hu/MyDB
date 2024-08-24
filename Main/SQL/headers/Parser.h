@@ -8,6 +8,7 @@ struct SQLStatement;
 #ifdef __cplusplus
 extern "C"
 #endif
-int yyparse (yyscan_t, struct SQLStatement **);
+    int
+    yyparse(yyscan_t, struct SQLStatement **);
 
-#endif	
+#endif

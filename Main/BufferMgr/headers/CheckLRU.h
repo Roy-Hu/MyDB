@@ -14,13 +14,13 @@
 #include "MyDB_PageHandle.h"
 
 // so that pages can be searched based on LRU access time
-class CheckLRU {
-
+class CheckLRU
+{
 public:
-	bool operator() (const MyDB_PagePtr lhs, const MyDB_PagePtr rhs) const {
-		return lhs->timeTick < rhs->timeTick;
-	}
+    bool operator()(const MyDB_PagePtr lhs, const MyDB_PagePtr rhs) const
+    {
+        return lhs->timeTick < rhs->timeTick;
+    }
 };
 
 #endif
-
