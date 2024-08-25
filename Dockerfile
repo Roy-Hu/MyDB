@@ -1,4 +1,5 @@
-FROM gcc:11.4
+# Builder stage
+FROM gcc:11.4 as builder
 
 # Update package lists and install Bison, Flex, and CMake
 RUN apt-get update && \
@@ -23,10 +24,13 @@ RUN cmake .
 # Run Make
 RUN make
 
+# Final stage (only used when building the full application, not for testing)
+FROM builder as final
+
 # Set the working directory to /MyDB/Build
 WORKDIR /MyDB/Build
 
-# Set the entry point to run sqlUnitTest
+# Set the entry point to run sqlProgram
 ENTRYPOINT ["./bin/sqlProgram"]
 
 # Set default command line arguments
